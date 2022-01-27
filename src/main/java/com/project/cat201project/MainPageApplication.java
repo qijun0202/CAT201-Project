@@ -8,9 +8,11 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class MainPageApplication extends Application {
+public class MainPageApplication extends Application
+{
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) throws IOException
+    {
         FXMLLoader fxmlLoader = new FXMLLoader(MainPageApplication.class.getResource("hello-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 320, 240);
         stage.setTitle("Hello!");
@@ -23,43 +25,37 @@ public class MainPageApplication extends Application {
         launch();
     }
 
-    public void playMusic()
+    public void playAudio()
     {
-
+        mediaPlayer.play();
     }
 
-    public void stopMusic()
+    public void stopAudio()
     {
-
+        mediaPlayer.pause();
     }
 
-    public void previousMusic()
+    public void previousAudio()
     {
-
     }
 
-    public void nextMusic()
+    public void nextAudio()
     {
-
     }
 
-    public void resetMusic()
+    public void resetAudio()
     {
-
     }
 
-    public void changeMusicSpeed(ActionEvent event)
+    public void changeAudioSpeed(ActionEvent event)
     {
-
     }
 
     public void startTimer()
     {
-
     }
 
     public void cancelTimer()
     {
-
     }
 }
