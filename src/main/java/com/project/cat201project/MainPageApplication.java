@@ -1,6 +1,7 @@
 package com.project.cat201project;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -17,7 +18,48 @@ public class MainPageApplication extends Application {
         stage.show();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         launch();
+    }
+
+    public void playMusic()
+    {
+
+    }
+
+    public void stopMusic()
+    {
+
+    }
+
+    public void previousMusic()
+    {
+
+    }
+
+    public void nextMusic()
+    {
+
+    }
+
+    public void resetMusic()
+    {
+
+    }
+
+    public void changeMusicSpeed(ActionEvent event)
+    {
+
+    }
+
+    public void startTimer()
+    {
+
+    }
+
+    public void cancelTimer()
+    {
+
     }
 }

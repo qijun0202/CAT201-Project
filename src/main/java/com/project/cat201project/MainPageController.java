@@ -1,7 +1,8 @@
 package com.project.cat201project;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
+import javafx.scene.layout.Pane;
 
 import java.io.File;
 import java.net.URL;
@@ -10,7 +11,7 @@ import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainPageController {
+public class MainPageController{
     @FXML
     private Label welcomeText;
 
@@ -18,8 +19,6 @@ public class MainPageController {
     protected void onHelloButtonClick() {
         welcomeText.setText("Welcome to JavaFX Application!");
     }
-<<<<<<< Updated upstream
-=======
 
     @FXML private Pane pane;
     @FXML private Label songLabel;
@@ -45,6 +44,4 @@ public class MainPageController {
         fileDirectory = new File("audio");
         files = fileDirectory.listFiles();
     }
-
->>>>>>> Stashed changes
 }
