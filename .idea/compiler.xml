@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="CAT201-Project" target="17" />
+      <module name="CAT201-Project" target="16" />
     </bytecodeTargetLevel>
   </component>
 </project>
