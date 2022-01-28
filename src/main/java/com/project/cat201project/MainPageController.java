@@ -1,13 +1,18 @@
 package com.project.cat201project;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.net.URL;
@@ -22,8 +27,8 @@ public class MainPageController implements Initializable
     @FXML private Pane pane;
     @FXML private Label audioLabel;
     @FXML private Button playBttn, pauseBttn, resetBttn, previousBttn, nextBttn;
-    @FXML private ComboBox<String> speed;
-    @FXML private Slider volume;
+    @FXML private ComboBox<String> speedBox;
+    @FXML private Slider volSlider;
     @FXML private ProgressBar audioProgressBar;
     @FXML private AnchorPane anchorId;
 
@@ -45,10 +50,10 @@ public class MainPageController implements Initializable
 
     private File fileDirectory;
     private File[] files;
-    private ArrayList<File> audioFiles;
+    private ArrayList<File> audios;
 
     private int audioNum;
-    private int[] audioSpeeds = {25, 50, 75, 100, 125, 150, 175, 200};
+    private double[] audioSpeeds = {0.25, 0.50, 0.75, 1.00, 1.25, 1.50, 1.75, 2.00};
 
     private Timer timer;
     private TimerTask task;
@@ -57,7 +62,7 @@ public class MainPageController implements Initializable
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) // play list initialization
     {
-        audioFiles = new ArrayList<File>();
+        audios = new ArrayList<File>();
         fileDirectory = new File("music");
         files = fileDirectory.listFiles();
 
@@ -65,13 +70,137 @@ public class MainPageController implements Initializable
         {
             for (File file: files)
             {
-                audioFiles.add(file);
+                audios.add(file);
             }
         }
 
-        media = new Media(audioFiles.get(audioNum).toURI().toString());
+        media = new Media(audios.get(audioNum).toURI().toString());
         mediaPlayer = new MediaPlayer(media);
+        audioLabel.setText(audios.get(audioNum).getName());
 
-        audioLabel.setText(audioFiles.get(audioNum).getName());
+        for(int i = 0; i < audioSpeeds.length; i++)
+        {
+            speedBox.getItems().add(Double.toString(audioSpeeds[i]));
+        }
+
+        speedBox.setOnAction(this::changeAudioSpeed);
+        volSlider.valueProperty().addListener(new ChangeListener<Number>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1)
+            {
+                mediaPlayer.setVolume(volSlider.getValue() * 0.01);
+            }
+        });
+
+        audioProgressBar.setStyle("-fx-accent: #00FF00;");
+    }
+
+    public void playAudio()
+    {
+        startTimer();
+        changeAudioSpeed(null);
+        mediaPlayer.setVolume(volSlider.getValue() * 0.01);
+        mediaPlayer.play();
+    }
+
+    public void stopAudio()
+    {
+        cancelTimer();
+        mediaPlayer.pause();
+    }
+
+    public void previousAudio()
+    {
+        if(audioNum > 0)
+        {
+            audioNum--;
+            mediaPlayer.stop();
+
+            if(run)
+                cancelTimer();
+
+            media = new Media(audios.get(audioNum).toURI().toString());
+            mediaPlayer = new MediaPlayer(media);
+            audioLabel.setText(audios.get(audioNum).getName());
+        }
+        else
+        {
+            audioNum = audios.size() - 1;
+            mediaPlayer.stop();
+
+            if(run)
+                cancelTimer();
+
+            media = new Media(audios.get(audioNum).toURI().toString());
+            mediaPlayer = new MediaPlayer(media);
+            audioLabel.setText(audios.get(audioNum).getName());
+        }
+    }
+
+    public void nextAudio()
+    {
+        if(audioNum < audios.size() - 1)
+        {
+            audioNum++;
+            mediaPlayer.stop();
+
+            if(run)
+                cancelTimer();
+
+            media = new Media(audios.get(audioNum).toURI().toString());
+            mediaPlayer = new MediaPlayer(media);
+            audioLabel.setText(audios.get(audioNum).getName());
+        }
+        else
+        {
+            audioNum = 0;
+            mediaPlayer.stop();
+
+            media = new Media(audios.get(audioNum).toURI().toString());
+            mediaPlayer = new MediaPlayer(media);
+            audioLabel.setText(audios.get(audioNum).getName());
+        }
+    }
+
+    public void resetAudio()
+    {
+        audioProgressBar.setProgress(0);
+        mediaPlayer.seek(Duration.seconds(0));
+    }
+
+    public void changeAudioSpeed(ActionEvent event)
+    {
+        if(speedBox.getValue() == null)
+        {
+            mediaPlayer.setRate(1);
+        }
+        mediaPlayer.setRate(Integer.parseInt(speedBox.getValue()));
+    }
+
+    public void startTimer()
+    {
+        timer = new Timer();
+        task = new TimerTask()
+        {
+            public void run()
+            {
+                run = true;
+                double current = mediaPlayer.getCurrentTime().toSeconds();
+                double end = media.getDuration().toSeconds();
+                audioProgressBar.setProgress(current/end);
+
+                if (current/end == 1)
+                    cancelTimer();
+            }
+        };
+
+        timer.scheduleAtFixedRate(task, 0,1000);
+    }
+
+    public void cancelTimer()
+    {
+        run = false;
+        timer.cancel();
     }
 }

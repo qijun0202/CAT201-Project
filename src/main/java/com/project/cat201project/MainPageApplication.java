@@ -1,10 +1,12 @@
 package com.project.cat201project;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 
@@ -18,44 +20,20 @@ public class MainPageApplication extends Application
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();
+
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>()
+        {
+            @Override
+            public void handle(WindowEvent windowEvent)
+            {
+                Platform.exit();
+                System.exit(0);
+            }
+        });
     }
 
     public static void main(String[] args)
     {
         launch();
-    }
-
-    public void playAudio()
-    {
-        mediaPlayer.play();
-    }
-
-    public void stopAudio()
-    {
-        mediaPlayer.pause();
-    }
-
-    public void previousAudio()
-    {
-    }
-
-    public void nextAudio()
-    {
-    }
-
-    public void resetAudio()
-    {
-    }
-
-    public void changeAudioSpeed(ActionEvent event)
-    {
-    }
-
-    public void startTimer()
-    {
-    }
-
-    public void cancelTimer()
-    {
     }
 }
