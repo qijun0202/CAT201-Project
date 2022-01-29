@@ -72,6 +72,7 @@ public class MainPageController implements Initializable
         mediaPlayer = new MediaPlayer(media);
         audioLabel.setText(audios.get(audioNum).getName());
 /*
+
         for(int i = 0; i < audioSpeeds.length; i++)
         {
             speedBox.getItems().add(Double.toString(audioSpeeds[i]));

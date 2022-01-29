@@ -1,4 +1,5 @@
-module com.project.cat201project {
+module com.project.cat201project
+{
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.media;
