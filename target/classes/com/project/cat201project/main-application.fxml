@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.effect.ColorAdjust?>
+<?import javafx.scene.effect.GaussianBlur?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.project.cat201project.MainPageController">
+   <children>
+      <ImageView fitHeight="720.0" fitWidth="1280.0" opacity="0.9" pickOnBounds="true">
+         <image>
+            <Image url="@sea-bay-waterfront-beach-50594.jpeg" />
+         </image>
+         <effect>
+            <GaussianBlur radius="20.0" />
+         </effect>
+      </ImageView>
+      <Pane opacity="0.85" prefHeight="620.0" prefWidth="280.0" style="-fx-background-color: #3f37c9;">
+         <children>
+            <ListView mouseTransparent="true" nodeOrientation="LEFT_TO_RIGHT" prefHeight="620.0" prefWidth="280.0" style="-fx-background-color: transparent;" />
+            <ImageView fitHeight="32.0" fitWidth="40.0" layoutX="37.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@CAT%20icon/icons8-music-80.png" />
+               </image>
+               <effect>
+                  <ColorAdjust brightness="0.69" hue="-0.56" saturation="0.37" />
+               </effect>
+            </ImageView>
+            <Button fx:id="browseBttn" layoutY="570.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#openDirectoryChooser" prefHeight="50.0" prefWidth="280.0" style="-fx-background-color: transparent;" text="Search for Music">
+               <textFill>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop>
+                           <color>
+                              <Color green="0.9747126698493958" blue="1.0" />
+                           </color>
+                        </Stop>
+                        <Stop offset="0.3873330970105164">
+                           <color>
+                              <Color red="0.540229856967926" green="1.0" />
+                           </color>
+                        </Stop>
+                        <Stop offset="0.5897435897435899">
+                           <color>
+                              <Color red="1.0" green="0.9787815809249878" blue="0.47999998927116394" />
+                           </color>
+                        </Stop>
+                        <Stop offset="0.9938556067588327">
+                           <color>
+                              <Color red="0.46666666865348816" green="1.0" />
+                           </color>
+                        </Stop>
+                        <Stop offset="1.0">
+                           <color>
+                              <Color red="1.0" green="1.0" blue="1.0" />
+                           </color>
+                        </Stop>
+                     </stops>
+                  </LinearGradient>
+               </textFill>
+               <font>
+                  <Font name="Comic Sans MS" size="15.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="28.0" fitWidth="57.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@CAT%20icon/icons8-music-folder-96.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+            <Button layoutY="126.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" prefWidth="280.0" style="-fx-background-color: transparent;" text="My Music" textAlignment="CENTER" textFill="WHITE">
+               <font>
+                  <Font name="Comic Sans MS" size="18.0" />
+               </font></Button>
+            <Label layoutX="97.0" layoutY="33.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="55.0" prefWidth="165.0" text="Zeus Music">
+               <font>
+                  <Font name="Britannic Bold" size="29.0" />
+               </font>
+               <textFill>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop>
+                           <color>
+                              <Color green="0.9747126698493958" blue="1.0" />
+                           </color>
+                        </Stop>
+                        <Stop offset="0.4917877821103628">
+                           <color>
+                              <Color red="1.0" green="1.0" blue="1.0" />
+                           </color>
+                        </Stop>
+                        <Stop offset="0.9938556067588327">
+                           <color>
+                              <Color red="0.46666666865348816" green="1.0" />
+                           </color>
+                        </Stop>
+                        <Stop offset="1.0">
+                           <color>
+                              <Color red="1.0" green="1.0" blue="1.0" />
+                           </color>
+                        </Stop>
+                     </stops>
+                  </LinearGradient>
+               </textFill>
+            </Label>
+         </children>
+      </Pane>
+      <Pane layoutY="620.0" prefHeight="100.0" prefWidth="1280.0" style="-fx-background-color: #3f37c9;">
+         <children>
+            <Button fx:id="pauseBttn" layoutX="624.0" layoutY="40.0" mnemonicParsing="false" onAction="#pauseAudio" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent;">
+               <graphic>
+                  <ImageView fitHeight="32.0" fitWidth="32.0" mouseTransparent="true" pickOnBounds="true">
+                     <image>
+                        <Image url="@CAT%20icon/icons8-pause-80.png" />
+                     </image>
+                     <effect>
+                        <ColorAdjust brightness="0.8" saturation="-0.5" />
+                     </effect>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="previousBttn" layoutX="576.0" layoutY="40.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#previousAudio" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent;" textFill="WHITE">
+               <graphic>
+                  <ImageView fitHeight="32.0" fitWidth="32.0" mouseTransparent="true" pickOnBounds="true">
+                     <image>
+                        <Image url="@CAT%20icon/icons8-skip-to-start-80.png" />
+                     </image>
+                     <effect>
+                        <ColorAdjust brightness="0.8" saturation="-0.5" />
+                     </effect>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="nextBttn" layoutX="672.0" layoutY="40.0" maxHeight="-Infinity" mnemonicParsing="false" onAction="#nextAudio" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent;">
+               <graphic>
+                  <ImageView fitHeight="32.0" fitWidth="32.0" mouseTransparent="true" pickOnBounds="true">
+                     <image />
+                     <Image url="@CAT%20icon/icons8-end-80.png" />
+                     <effect>
+                        <ColorAdjust brightness="0.8" saturation="-0.5" />
+                     </effect>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="playBttn" layoutX="720.0" layoutY="40.0" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#playAudio" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent;">
+               <graphic>
+                  <ImageView fitHeight="28.0" fitWidth="26.0" pickOnBounds="true">
+                     <image>
+                        <Image url="@CAT%20icon/icons8-play-80.png" />
+                     </image>
+                     <effect>
+                        <ColorAdjust brightness="0.8" saturation="-0.5" />
+                     </effect>
+                  </ImageView>
+               </graphic></Button>
+            <Slider fx:id="volSlider" layoutX="1055.0" layoutY="44.0" minorTickCount="4" prefHeight="25.0" prefWidth="200.0" />
+            <ImageView fitHeight="20.0" fitWidth="20.0" layoutX="1025.0" layoutY="46.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@CAT%20icon/icons8-audio-80.png" />
+               </image>
+               <effect>
+                  <ColorAdjust brightness="0.8" saturation="-0.5" />
+               </effect>
+            </ImageView>
+            <ProgressBar fx:id="audioProgressBar" prefHeight="20.0" prefWidth="1280.0" progress="0.0" />
+            <Label fx:id="audioLabel" layoutX="121.0" layoutY="47.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="400.0" text="audioLabel" textFill="WHITE">
+               <font>
+                  <Font name="Comic Sans MS" size="15.0" />
+               </font></Label>
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>
