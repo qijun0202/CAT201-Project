@@ -26,17 +26,16 @@ public class MainPageController implements Initializable
 
     @FXML private Pane pane;
     @FXML private Label audioLabel;
-    @FXML private Button playBttn, pauseBttn, resetBttn, previousBttn, nextBttn;
+    @FXML private Button playBttn, pauseBttn, resetBttn, previousBttn, nextBttn, browseBttn;
     @FXML private ComboBox<String> speedBox;
     @FXML private Slider volSlider;
     @FXML private ProgressBar audioProgressBar;
-    @FXML private AnchorPane anchorId;
 
     @FXML
     private void openDirectoryChooser(ActionEvent event)
     {
         final DirectoryChooser dirChooser = new DirectoryChooser();
-        Stage stage = (Stage) anchorId.getScene().getWindow();
+        Stage stage = (Stage) browseBttn.getScene().getWindow();
         File file = dirChooser.showDialog(stage);
 
         if(file != null)
