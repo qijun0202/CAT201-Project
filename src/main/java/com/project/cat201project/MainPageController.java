@@ -7,12 +7,16 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -42,25 +46,42 @@ public class MainPageController implements Initializable
         Stage stage = (Stage) browseBttn.getScene().getWindow();
         File file = dirChooser.showDialog(stage);
 
-        String pathname = file.getAbsolutePath();
-        fileDirectory = new File(pathname);
-        files = fileDirectory.listFiles();
-
-        if (files != null)
+        if(file!=null)
         {
-            stopAudio();
-            audios.clear();
-            for (File fil : files)
-            {
-                if(fil.getName().endsWith("mp3") || fil.getName().endsWith("wav"))
-                {
-                    audios.add(fil);
+            String pathname = file.getAbsolutePath();
+            fileDirectory = new File(pathname);
+            files = fileDirectory.listFiles();
+
+            if (files.length != 0) {
+                if (run)
+                    stopAudio();
+                audios.clear();
+                songlist.getItems().clear();
+                audioNum = 0;
+                ObservableList<String> names = FXCollections.observableArrayList();
+                for (File fil : files) {
+                    if (fil.getName().endsWith("mp3") || fil.getName().endsWith("wav")) {
+                        audios.add(fil);
+                        names.add(fil.getName());
+                    }
                 }
+                songlist.setItems(names);
+                media = new Media(audios.get(audioNum).toURI().toString());
+                mediaPlayer = new MediaPlayer(media);
+                playAudio();
+                audioLabel.setText(audios.get(audioNum).getName().replace(".mp3", ""));
             }
-            media = new Media(audios.get(audioNum).toURI().toString());
-            mediaPlayer = new MediaPlayer(media);
-            nextAudio();
-            audioLabel.setText(audios.get(audioNum).getName().replace(".mp3", ""));
+            if (!init) {
+                volSlider.valueProperty().addListener(new ChangeListener<Number>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                        mediaPlayer.setVolume(volSlider.getValue() * 0.01);
+                    }
+                });
+
+                audioProgressBar.setStyle("-fx-accent: #00FF00;");
+                init = true;
+            }
         }
     }
 
@@ -76,7 +97,7 @@ public class MainPageController implements Initializable
 
     private Timer timer;
     private TimerTask task;
-    private boolean run;
+    private boolean run ,init;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) // play list initialization
@@ -86,16 +107,14 @@ public class MainPageController implements Initializable
         files = fileDirectory.listFiles();
 
         ObservableList<String> names = FXCollections.observableArrayList();;
-        if (files != null)
+        if (files.length != 0)
         {
             for (File file: files)
             {
                 audios.add(file);
                 names.add(file.getName());
-//                songlist.getItems().add(file.getName());
             }
             songlist.setItems(names);
-        }
 
         media = new Media(audios.get(audioNum).toURI().toString());
         mediaPlayer = new MediaPlayer(media);
@@ -118,7 +137,13 @@ public class MainPageController implements Initializable
             }
         });
 
-        audioProgressBar.setStyle("-fx-accent: #00FF00;");
+            audioProgressBar.setStyle("-fx-accent: #00FF00;");
+        }
+        else {
+            ErrorMessage(1);
+            audioLabel.setText("No Song");
+            init = false;
+        }
     }
 
     public void playAudio()
@@ -206,6 +231,16 @@ public class MainPageController implements Initializable
         audioProgressBar.setProgress(0);
         mediaPlayer.seek(Duration.seconds(0));
     }
+    /*
+    public void repeatAudio()
+    {
+        mediaPlayer.setOnRepeat(new Runnable() {
+            @Override
+            public void run() {
+                mediaPlayer.getOnRepeat();
+            }
+        });
+    }*/
 /*
     public void changeAudioSpeed(ActionEvent event)
     {
@@ -237,7 +272,7 @@ public class MainPageController implements Initializable
             }
         };
 
-        timer.scheduleAtFixedRate(task, 0,1000);
+        timer.scheduleAtFixedRate(task, 0,100);
     }
 
     public void cancelTimer()
@@ -248,57 +283,65 @@ public class MainPageController implements Initializable
 
     public void listClicked(MouseEvent event)
     {
-        String item = songlist.getSelectionModel().getSelectedItem();
-        //String item2 =audioLabel.getText();
-        //System.out.println(item);
-        //System.out.println(item2);
-        //System.out.println(item.equals(item2));
-        //if(!(item.equals(item2)));
-        {
-            audioNum = 0;
+        if(songlist.getSelectionModel().getSelectedItem()!=null) {
+            String item = songlist.getSelectionModel().getSelectedItem();
             String item2 = audios.get(audioNum).getName();
 
-            while (!(item.equals(item2))) {
-                audioNum++;
+            if (!(item.equals(item2))) {
+                audioNum = 0;
                 item2 = audios.get(audioNum).getName();
-            }
-            mediaPlayer.stop();
 
-            if (run)
-                cancelTimer();
-
-            media = new Media(audios.get(audioNum).toURI().toString());
-            mediaPlayer = new MediaPlayer(media);
-            audioLabel.setText(audios.get(audioNum).getName());
-
-            playAudio();
-        }
-    }
-    /*
-    public ArrayList<File> findSong (File file)
-    {
-        ArrayList<File> arrayList = new ArrayList<>();
-        File[] files = file.listFiles();
-        for (File singlefile: files)
-        {
-            if (singlefile.isDirectory() && !singlefile.isHidden())
-            {
-                arrayList.addAll(findSong(singlefile));
-            }
-            else
-            {
-                if (singlefile.getName().endsWith(".mp3") || singlefile.getName().endsWith(".wav"))
-                {
-                    arrayList.add(singlefile);
+                while (!(item.equals(item2))) {
+                    audioNum++;
+                    item2 = audios.get(audioNum).getName();
                 }
+                mediaPlayer.stop();
+
+                if (run)
+                    cancelTimer();
+
+                media = new Media(audios.get(audioNum).toURI().toString());
+                mediaPlayer = new MediaPlayer(media);
+                audioLabel.setText(audios.get(audioNum).getName());
+
+                playAudio();
             }
         }
-        return arrayList;
     }
 
-    void displaySongs()
+    public void ErrorMessage(int code)
     {
-        final ArrayList<File> mySongs = findSong()
+        String message;
+        switch (code)
+        {
+            case 1:
+            {
+                message = "No any file found in the directory.";
+                break;
+            }
+            case 2:
+            {
+                message = "Er ";
+                break;
+            }
+            case 3:
+            {
+                message = "Err ";
+                break;
+            }
+            case 4:
+            {
+                message = " ";
+                break;
+            }
+            default:
+                message = "There is an error occur!";
+        }
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error Dialog");
+        alert.setHeaderText("Look, an Error Dialog");
+        alert.setContentText(message);
+
+        alert.showAndWait();
     }
-    */
 }
