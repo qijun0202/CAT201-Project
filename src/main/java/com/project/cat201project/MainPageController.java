@@ -321,15 +321,15 @@ public class MainPageController implements Initializable
     {
         if(songlist.getSelectionModel().getSelectedItem()!=null) {
             String item = songlist.getSelectionModel().getSelectedItem();
-            String item2 = audios.get(audioNum).getName();
+            String item2 = audios.get(audioNum).getName().replace(".mp3", "");
 
             if (!(item.equals(item2))) {
                 audioNum = 0;
-                item2 = audios.get(audioNum).getName();
+                item2 = audios.get(audioNum).getName().replace(".mp3", "");
 
                 while (!(item.equals(item2))) {
                     audioNum++;
-                    item2 = audios.get(audioNum).getName();
+                    item2 = audios.get(audioNum).getName().replace(".mp3", "");
                 }
                 mediaPlayer.stop();
 
@@ -338,7 +338,7 @@ public class MainPageController implements Initializable
 
                 media = new Media(audios.get(audioNum).toURI().toString());
                 mediaPlayer = new MediaPlayer(media);
-                audioLabel.setText(audios.get(audioNum).getName());
+                audioLabel.setText(audios.get(audioNum).getName().replace(".mp3", ""));
 
                 playAudio();
             }
