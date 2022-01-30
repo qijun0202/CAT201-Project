@@ -18,6 +18,7 @@ import javafx.util.Duration;
 
 import java.io.File;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.Timer;
@@ -28,41 +29,12 @@ public class MainPageController implements Initializable
 
     @FXML private Pane pane;
     @FXML private Label audioLabel, currentTime, totalDuration;
-    @FXML private ListView<String> songlist;
+    @FXML private ListView<String> playList;
     @FXML private Button playBttn, pauseBttn, stopBttn, previousBttn, nextBttn, browseBttn;
     //@FXML private ComboBox<String> speedBox;
     @FXML private Slider volSlider;
     @FXML private ProgressBar audioProgressBar;
     //@FXML private Duration duration;
-
-    @FXML
-    private void openDirectoryChooser(ActionEvent event)
-    {
-        final DirectoryChooser dirChooser = new DirectoryChooser();
-        Stage stage = (Stage) browseBttn.getScene().getWindow();
-        File file = dirChooser.showDialog(stage);
-
-        String pathname = file.getAbsolutePath();
-        fileDirectory = new File(pathname);
-        files = fileDirectory.listFiles();
-
-        if (files != null)
-        {
-            stopAudio();
-            audios.clear();
-            for (File fil : files)
-            {
-                if(fil.getName().endsWith("mp3") || fil.getName().endsWith("wav"))
-                {
-                    audios.add(fil);
-                }
-            }
-            media = new Media(audios.get(audioNum).toURI().toString());
-            mediaPlayer = new MediaPlayer(media);
-            nextAudio();
-            audioLabel.setText(audios.get(audioNum).getName().replace(".mp3", ""));
-        }
-    }
 
     private Media media;
     private MediaPlayer mediaPlayer;
@@ -76,7 +48,50 @@ public class MainPageController implements Initializable
 
     private Timer timer;
     private TimerTask task;
-    private boolean run;
+    private boolean run, init;
+
+    @FXML
+    private void openDirectoryChooser(ActionEvent event)
+    {
+        final DirectoryChooser dirChooser = new DirectoryChooser();
+        Stage stage = (Stage) browseBttn.getScene().getWindow();
+        File file = dirChooser.showDialog(stage);
+        if(file != null) {
+            String pathname = file.getAbsolutePath();
+            fileDirectory = new File(pathname);
+            files = fileDirectory.listFiles();
+
+            ObservableList<String> names = FXCollections.observableArrayList();
+            if (files != null) {
+                if (run)
+                    stopAudio();
+                audios.clear();
+                playList.getItems().clear();
+                for (File fil : files) {
+                    if (fil.getName().endsWith("mp3") || fil.getName().endsWith("wav")) {
+                        audios.add(fil);
+                        names.add(fil.getName());
+                    }
+                    playList.setItems(names);
+                }
+                media = new Media(audios.get(audioNum).toURI().toString());
+                mediaPlayer = new MediaPlayer(media);
+                nextAudio();
+                audioLabel.setText(audios.get(audioNum).getName().replace(".mp3", ""));
+            }
+            if (!init) {
+                volSlider.valueProperty().addListener(new ChangeListener<Number>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                        mediaPlayer.setVolume(volSlider.getValue() * 0.01);
+                    }
+                });
+
+                audioProgressBar.setStyle("-fx-accent: #00FF00;");
+                init = true;
+            }
+        }
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) // play list initialization
@@ -85,21 +100,19 @@ public class MainPageController implements Initializable
         fileDirectory = new File("music");
         files = fileDirectory.listFiles();
 
-        ObservableList<String> names = FXCollections.observableArrayList();;
-        if (files != null)
-        {
-            for (File file: files)
-            {
+        ObservableList<String> names = FXCollections.observableArrayList();
+        if (files.length != 0) {
+            for (File file : files) {
                 audios.add(file);
                 names.add(file.getName());
 //                songlist.getItems().add(file.getName());
             }
-            songlist.setItems(names);
-        }
+            playList.setItems(names);
 
-        media = new Media(audios.get(audioNum).toURI().toString());
-        mediaPlayer = new MediaPlayer(media);
-        audioLabel.setText(audios.get(audioNum).getName().replace(".mp3", ""));
+
+            media = new Media(audios.get(audioNum).toURI().toString());
+            mediaPlayer = new MediaPlayer(media);
+            audioLabel.setText(audios.get(audioNum).getName().replace(".mp3", ""));
 /*
         for(int i = 0; i < audioSpeeds.length; i++)
         {
@@ -109,16 +122,20 @@ public class MainPageController implements Initializable
         speedBox.setOnAction(this::changeAudioSpeed);
 */
 
-        volSlider.valueProperty().addListener(new ChangeListener<Number>()
-        {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1)
-            {
-                mediaPlayer.setVolume(volSlider.getValue() * 0.01);
-            }
-        });
+            volSlider.valueProperty().addListener(new ChangeListener<Number>() {
+                @Override
+                public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                    mediaPlayer.setVolume(volSlider.getValue() * 0.01);
+                }
+            });
 
-        audioProgressBar.setStyle("-fx-accent: #00FF00;");
+            audioProgressBar.setStyle("-fx-accent: #00FF00;");
+        }
+        else {
+            errorMessage(1);
+            audioLabel.setText("No Song");
+            init = false;
+        }
     }
 
     public void playAudio()
@@ -248,57 +265,63 @@ public class MainPageController implements Initializable
 
     public void listClicked(MouseEvent event)
     {
-        String item = songlist.getSelectionModel().getSelectedItem();
-        //String item2 =audioLabel.getText();
-        //System.out.println(item);
-        //System.out.println(item2);
-        //System.out.println(item.equals(item2));
-        //if(!(item.equals(item2)));
+        if(playList.getSelectionModel().getSelectedItem() != null)
         {
-            audioNum = 0;
-            String item2 = audios.get(audioNum).getName();
+            String item = (String) playList.getSelectionModel().getSelectedItem();
+                String item2 = audioLabel.getText();
 
-            while (!(item.equals(item2))) {
-                audioNum++;
-                item2 = audios.get(audioNum).getName();
+            if (!item.equals(item2))
+            {
+                audioNum = 0;
+
+                for (item2 = ((File) audios.get(audioNum)).getName(); !item.equals(item2); item2 = ((File) audios.get(audioNum)).getName())
+                    ++audioNum;
+
+                mediaPlayer.stop();
+                if (run)
+                    cancelTimer();
+
+                media = new Media(((File) audios.get(audioNum)).toURI().toString());
+                mediaPlayer = new MediaPlayer(media);
+                audioLabel.setText(((File) audios.get(audioNum)).getName());
+                playAudio();
             }
-            mediaPlayer.stop();
-
-            if (run)
-                cancelTimer();
-
-            media = new Media(audios.get(audioNum).toURI().toString());
-            mediaPlayer = new MediaPlayer(media);
-            audioLabel.setText(audios.get(audioNum).getName());
-
-            playAudio();
         }
     }
-    /*
-    public ArrayList<File> findSong (File file)
-    {
-        ArrayList<File> arrayList = new ArrayList<>();
-        File[] files = file.listFiles();
-        for (File singlefile: files)
-        {
-            if (singlefile.isDirectory() && !singlefile.isHidden())
-            {
-                arrayList.addAll(findSong(singlefile));
-            }
-            else
-            {
-                if (singlefile.getName().endsWith(".mp3") || singlefile.getName().endsWith(".wav"))
-                {
-                    arrayList.add(singlefile);
-                }
-            }
-        }
-        return arrayList;
-    }
 
-    void displaySongs()
+    public void errorMessage(int code)
     {
-        final ArrayList<File> mySongs = findSong()
+        String message;
+        switch (code)
+        {
+            case 1:
+            {
+                message = "No any file found in the directory.";
+                break;
+            }
+            case 2:
+            {
+                message = "Er ";
+                break;
+            }
+            case 3:
+            {
+                message = "Err ";
+                break;
+            }
+            case 4:
+            {
+                message = " ";
+                break;
+            }
+            default:
+                message = "There is an error occur!";
+        }
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error Dialog");
+        alert.setHeaderText("Look, an Error Dialog");
+        alert.setContentText(message);
+
+        alert.showAndWait();
     }
-    */
 }
