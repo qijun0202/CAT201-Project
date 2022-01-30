@@ -2,11 +2,17 @@ package com.project.cat201project;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+<<<<<<< Updated upstream
 import javafx.scene.layout.AnchorPane;
+=======
+import javafx.scene.input.MouseEvent;
+>>>>>>> Stashed changes
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -26,6 +32,7 @@ public class MainPageController implements Initializable
 
     @FXML private Pane pane;
     @FXML private Label audioLabel;
+    @FXML private ListView<String> songlist;
     @FXML private Button playBttn, pauseBttn, resetBttn, previousBttn, nextBttn, browseBttn;
     @FXML private ComboBox<String> speedBox;
     @FXML private Slider volSlider;
@@ -40,7 +47,22 @@ public class MainPageController implements Initializable
 
         if(file != null)
         {
+<<<<<<< Updated upstream
             System.out.println("Path: " + file.getAbsolutePath());
+=======
+            mediaPlayer.stop();
+            if(run)
+                cancelTimer();
+            audios.clear();
+            for (File fil : files)
+            {
+                audios.add(fil);
+            }
+            media = new Media(audios.get(audioNum).toURI().toString());
+            mediaPlayer = new MediaPlayer(media);
+            audioLabel.setText(audios.get(audioNum).getName());
+            playAudio();
+>>>>>>> Stashed changes
         }
     }
 
@@ -65,12 +87,16 @@ public class MainPageController implements Initializable
         fileDirectory = new File("music");
         files = fileDirectory.listFiles();
 
+        ObservableList<String> names = FXCollections.observableArrayList();;
         if (files != null)
         {
             for (File file: files)
             {
                 audios.add(file);
+                names.add(file.getName());
+//                songlist.getItems().add(file.getName());
             }
+            songlist.setItems(names);
         }
 
         media = new Media(audios.get(audioNum).toURI().toString());
@@ -201,5 +227,32 @@ public class MainPageController implements Initializable
     {
         run = false;
         timer.cancel();
+    }
+
+    public void listClicked(MouseEvent event)
+    {
+        String item = songlist.getSelectionModel().getSelectedItem();
+        String item2 =audioLabel.getText();
+        if(!item.equals(item2))
+        {
+            audioNum = 0;
+            item2 = audios.get(audioNum).getName();
+
+            while (!(item.equals(item2))) {
+                audioNum++;
+                item2 = audios.get(audioNum).getName();
+            }
+            ;
+            mediaPlayer.stop();
+
+            if (run)
+                cancelTimer();
+
+            media = new Media(audios.get(audioNum).toURI().toString());
+            mediaPlayer = new MediaPlayer(media);
+            audioLabel.setText(audios.get(audioNum).getName());
+
+            playAudio();
+        }
     }
 }
