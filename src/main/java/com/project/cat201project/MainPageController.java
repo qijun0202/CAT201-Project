@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -24,11 +25,12 @@ public class MainPageController implements Initializable
 {
 
     @FXML private Pane pane;
-    @FXML private Label audioLabel;
+    @FXML private Label audioLabel, currentTime, totalDuration;
     @FXML private Button playBttn, pauseBttn, resetBttn, previousBttn, nextBttn, browseBttn;
-    @FXML private ComboBox<String> speedBox;
+    //@FXML private ComboBox<String> speedBox;
     @FXML private Slider volSlider;
     @FXML private ProgressBar audioProgressBar;
+    //@FXML private Duration duration;
 
     @FXML
     private void openDirectoryChooser(ActionEvent event)
@@ -78,7 +80,9 @@ public class MainPageController implements Initializable
             speedBox.getItems().add(Double.toString(audioSpeeds[i]));
         }
 
-        speedBox.setOnAction(this::changeAudioSpeed);*/
+        speedBox.setOnAction(this::changeAudioSpeed);
+*/
+
         volSlider.valueProperty().addListener(new ChangeListener<Number>()
         {
             @Override
@@ -213,5 +217,31 @@ public class MainPageController implements Initializable
         run = false;
         timer.cancel();
     }
+/*
+    public ArrayList<File> findSong (File file)
+    {
+        ArrayList<File> arrayList = new ArrayList<>();
+        File[] files = file.listFiles();
+        for (File singlefile: files)
+        {
+            if (singlefile.isDirectory() && !singlefile.isHidden())
+            {
+                arrayList.addAll(findSong(singlefile));
+            }
+            else
+            {
+                if (singlefile.getName().endsWith(".mp3") || singlefile.getName().endsWith(".wav"))
+                {
+                    arrayList.add(singlefile);
+                }
+            }
+        }
+        return arrayList;
+    }
 
+    void displaySongs()
+    {
+        final ArrayList<File> mySongs = findSong()
+    }
+*/
 }
