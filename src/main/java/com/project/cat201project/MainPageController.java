@@ -7,16 +7,12 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -52,7 +48,20 @@ public class MainPageController implements Initializable
             fileDirectory = new File(pathname);
             files = fileDirectory.listFiles();
 
-            if (files.length != 0)
+            for(File file_check: files)
+            {
+                if (file_check.getName().endsWith(".mp3") || file_check.getName().endsWith(".wav"))
+                {
+                    folder_valid = true;
+                    break;
+                }
+                else
+                {
+                    folder_valid = false;
+                }
+            }
+
+            if (files.length != 0 && folder_valid == true)
             {
                 if (run)
                     stopAudio();
@@ -64,7 +73,7 @@ public class MainPageController implements Initializable
                     if (fil.getName().endsWith("mp3") || fil.getName().endsWith("wav"))
                     {
                         audios.add(fil);
-                        names.add(fil.getName());
+                        names.add(fil.getName().replace(".mp3", ""));
                     }
                 }
                 songlist.setItems(names);
@@ -89,6 +98,10 @@ public class MainPageController implements Initializable
                 init = true;
             }
         }
+        else
+        {
+            ErrorMessage();
+        }
     }
 
     private Media media;
@@ -103,7 +116,7 @@ public class MainPageController implements Initializable
 
     private Timer timer;
     private TimerTask task;
-    private boolean run ,init;
+    private boolean run, init, folder_valid = false;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) // play list initialization
@@ -113,12 +126,29 @@ public class MainPageController implements Initializable
         files = fileDirectory.listFiles();
 
         ObservableList<String> names = FXCollections.observableArrayList();;
-        if (files.length != 0)
+
+        for(File file_check: files)
+        {
+            if (file_check.getName().endsWith(".mp3") || file_check.getName().endsWith(".wav"))
+            {
+                folder_valid = true;
+                break;
+            }
+            else
+            {
+                folder_valid = false;
+            }
+        }
+
+        if (files.length != 0 && folder_valid == true)
         {
             for (File file: files)
             {
-                audios.add(file);
-                names.add(file.getName());
+                if(file.getName().endsWith(".mp3") || file.getName().endsWith(".wav"))
+                {
+                    audios.add(file);
+                    names.add(file.getName().replace(".mp3", ""));
+                }
             }
             songlist.setItems(names);
 
@@ -146,7 +176,7 @@ public class MainPageController implements Initializable
             audioProgressBar.setStyle("-fx-accent: #00FF00;");
         }
         else {
-            ErrorMessage(1);
+            ErrorMessage();
             audioLabel.setText("No Song");
             init = false;
         }
@@ -315,37 +345,15 @@ public class MainPageController implements Initializable
         }
     }
 
-    public void ErrorMessage(int code)
+    public void ErrorMessage()
     {
         String message;
-        switch (code)
-        {
-            case 1:
-            {
-                message = "No any file found in the directory.";
-                break;
-            }
-            case 2:
-            {
-                message = "Er ";
-                break;
-            }
-            case 3:
-            {
-                message = "Err ";
-                break;
-            }
-            case 4:
-            {
-                message = " ";
-                break;
-            }
-            default:
-                message = "There is an error occur!";
-        }
+
+        message = "Error occurred. Please try again.";
+
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error Dialog");
-        alert.setHeaderText("Look, an Error Dialog");
+        alert.setTitle("Error Message");
+        alert.setHeaderText("Error encountered while performing current task");
         alert.setContentText(message);
 
         alert.showAndWait();
