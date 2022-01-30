@@ -195,12 +195,12 @@
                <font>
                   <Font name="Comic Sans MS" size="15.0" />
                </font></Label>
-            <Label fx:id="currentTime" layoutX="342.0" layoutY="13.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="20.0" prefWidth="50.0" text="CurrentTime" textFill="WHITE">
+            <Label fx:id="currentTime" layoutX="342.0" layoutY="13.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="20.0" prefWidth="50.0" text="CurrentTime" textFill="WHITE" visible="false">
                <font>
                   <Font name="Comic Sans MS" size="15.0" />
                </font>
             </Label>
-            <Label fx:id="totalDuration" layoutX="908.0" layoutY="13.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="20.0" prefWidth="50.0" text="TotalTime" textFill="WHITE">
+            <Label fx:id="totalDuration" layoutX="908.0" layoutY="13.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="20.0" prefWidth="200.0" text="TotalTime" textFill="WHITE">
                <font>
                   <Font name="Comic Sans MS" size="15.0" />
                </font>
@@ -209,7 +209,7 @@
       </Pane>
       <Pane layoutX="280.0" opacity="0.85" prefHeight="70.0" prefWidth="1000.0" style="-fx-background-color: #c77dff;">
          <children>
-            <Label layoutX="38.0" layoutY="8.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="55.0" prefWidth="165.0" text="My Music">
+            <Label layoutX="38.0" layoutY="8.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="55.0" prefWidth="165.0" text="Now Playing">
                <font>
                   <Font name="Comic Sans MS" size="29.0" />
                </font>

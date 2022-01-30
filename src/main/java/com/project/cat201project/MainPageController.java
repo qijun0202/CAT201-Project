@@ -1,5 +1,8 @@
 package com.project.cat201project;
 
+import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -117,6 +120,7 @@ public class MainPageController implements Initializable
     private Timer timer;
     private TimerTask task;
     private boolean run, init, folder_valid = false;
+    private Duration duration;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) // play list initialization
@@ -173,6 +177,23 @@ public class MainPageController implements Initializable
             }
         });
 
+        mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() {
+            @Override
+            public void invalidated(Observable observable)
+            {
+                updateValues();
+                //showTimer();
+            }
+        });
+
+        mediaPlayer.setOnReady(new Runnable() {
+            @Override
+            public void run() {
+                duration = mediaPlayer.getMedia().getDuration();
+                updateValues();
+            }
+        });
+
             audioProgressBar.setStyle("-fx-accent: #00FF00;");
         }
         else {
@@ -188,6 +209,23 @@ public class MainPageController implements Initializable
         //changeAudioSpeed(null);
         mediaPlayer.setVolume(volSlider.getValue() * 0.01);
         mediaPlayer.play();
+
+        mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() {
+            @Override
+            public void invalidated(Observable observable)
+            {
+                updateValues();
+                //showTimer();
+            }
+        });
+
+        mediaPlayer.setOnReady(new Runnable() {
+            @Override
+            public void run() {
+                duration = mediaPlayer.getMedia().getDuration();
+                updateValues();
+            }
+        });
     }
 
     public void pauseAudio()
@@ -316,6 +354,27 @@ public class MainPageController implements Initializable
         run = false;
         timer.cancel();
     }
+/*
+    public void showTimer()
+    {
+        Duration currentPlayTime = mediaPlayer.getCurrentTime();
+        duration = mediaPlayer.getMedia().getDuration();
+    }
+*/
+    protected void updateValues()
+    {
+        if (totalDuration != null && duration.greaterThan(Duration.ZERO))
+        {
+            Platform.runLater(new Runnable()
+            {
+                public void run()
+                {
+                    Duration currentPlayTime = mediaPlayer.getCurrentTime();
+                    totalDuration.setText(formatTime(currentPlayTime, duration));
+                }
+            });
+        }
+    }
 
     public void listClicked(MouseEvent event)
     {
@@ -373,5 +432,44 @@ public class MainPageController implements Initializable
         alert.setContentText(message);
 
         alert.showAndWait();
+    }
+
+    private static String formatTime(Duration elapsed, Duration duration) {
+        int intElapsed = (int) Math.floor(elapsed.toSeconds());
+        int elapsedHours = intElapsed / (60 * 60);
+        if (elapsedHours > 0) {
+            intElapsed -= elapsedHours * 60 * 60;
+        }
+        int elapsedMinutes = intElapsed / 60;
+        int elapsedSeconds = intElapsed - elapsedHours * 60 * 60
+                - elapsedMinutes * 60;
+
+        if (duration.greaterThan(Duration.ZERO)) {
+            int intDuration = (int) Math.floor(duration.toSeconds());
+            int durationHours = intDuration / (60 * 60);
+            if (durationHours > 0) {
+                intDuration -= durationHours * 60 * 60;
+            }
+            int durationMinutes = intDuration / 60;
+            int durationSeconds = intDuration - durationHours * 60 * 60
+                    - durationMinutes * 60;
+            if (durationHours > 0) {
+                return String.format("%d:%02d:%02d/%d:%02d:%02d",
+                        elapsedHours, elapsedMinutes, elapsedSeconds,
+                        durationHours, durationMinutes, durationSeconds);
+            } else {
+                return String.format("%02d:%02d/%02d:%02d",
+                        elapsedMinutes, elapsedSeconds, durationMinutes,
+                        durationSeconds);
+            }
+        } else {
+            if (elapsedHours > 0) {
+                return String.format("%d:%02d:%02d", elapsedHours,
+                        elapsedMinutes, elapsedSeconds);
+            } else {
+                return String.format("%02d:%02d", elapsedMinutes,
+                        elapsedSeconds);
+            }
+        }
     }
 }
