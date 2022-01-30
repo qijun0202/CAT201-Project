@@ -192,7 +192,7 @@
       </Pane>
       <VBox layoutX="280.0" layoutY="70.0" prefHeight="550.0" prefWidth="1000.0" style="-fx-background-color: transparent;">
          <children>
-            <ListView fx:id="playList" blendMode="MULTIPLY" editable="true" onMouseClicked="#listClicked" prefHeight="434.0" prefWidth="320.0" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS" />
+            <ListView fx:id="songlist" blendMode="MULTIPLY" editable="true" onMouseClicked="#listClicked" prefHeight="434.0" prefWidth="320.0" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS" />
          </children>
       </VBox>
    </children>

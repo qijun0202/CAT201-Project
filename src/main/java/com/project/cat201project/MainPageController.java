@@ -7,18 +7,21 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.File;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.Timer;
@@ -29,26 +32,12 @@ public class MainPageController implements Initializable
 
     @FXML private Pane pane;
     @FXML private Label audioLabel, currentTime, totalDuration;
-    @FXML private ListView<String> playList;
+    @FXML private ListView<String> songlist;
     @FXML private Button playBttn, pauseBttn, stopBttn, previousBttn, nextBttn, browseBttn;
     //@FXML private ComboBox<String> speedBox;
     @FXML private Slider volSlider;
     @FXML private ProgressBar audioProgressBar;
     //@FXML private Duration duration;
-
-    private Media media;
-    private MediaPlayer mediaPlayer;
-
-    private File fileDirectory;
-    private File[] files;
-    private ArrayList<File> audios;
-
-    private int audioNum;
-    private double[] audioSpeeds = {0.25, 0.50, 0.75, 1.00, 1.25, 1.50, 1.75, 2.00};
-
-    private Timer timer;
-    private TimerTask task;
-    private boolean run, init;
 
     @FXML
     private void openDirectoryChooser(ActionEvent event)
@@ -56,27 +45,29 @@ public class MainPageController implements Initializable
         final DirectoryChooser dirChooser = new DirectoryChooser();
         Stage stage = (Stage) browseBttn.getScene().getWindow();
         File file = dirChooser.showDialog(stage);
-        if(file != null) {
+
+        if(file!=null) {
             String pathname = file.getAbsolutePath();
             fileDirectory = new File(pathname);
             files = fileDirectory.listFiles();
 
-            ObservableList<String> names = FXCollections.observableArrayList();
-            if (files != null) {
+            if (files.length != 0) {
                 if (run)
                     stopAudio();
                 audios.clear();
-                playList.getItems().clear();
+                songlist.getItems().clear();
+                audioNum = 0;
+                ObservableList<String> names = FXCollections.observableArrayList();
                 for (File fil : files) {
                     if (fil.getName().endsWith("mp3") || fil.getName().endsWith("wav")) {
                         audios.add(fil);
                         names.add(fil.getName());
                     }
-                    playList.setItems(names);
                 }
+                songlist.setItems(names);
                 media = new Media(audios.get(audioNum).toURI().toString());
                 mediaPlayer = new MediaPlayer(media);
-                nextAudio();
+                playAudio();
                 audioLabel.setText(audios.get(audioNum).getName().replace(".mp3", ""));
             }
             if (!init) {
@@ -93,6 +84,21 @@ public class MainPageController implements Initializable
         }
     }
 
+
+    private Media media;
+    private MediaPlayer mediaPlayer;
+
+    private File fileDirectory;
+    private File[] files;
+    private ArrayList<File> audios;
+
+    private int audioNum;
+    private double[] audioSpeeds = {0.25, 0.50, 0.75, 1.00, 1.25, 1.50, 1.75, 2.00};
+
+    private Timer timer;
+    private TimerTask task;
+    private boolean run ,init;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) // play list initialization
     {
@@ -105,9 +111,8 @@ public class MainPageController implements Initializable
             for (File file : files) {
                 audios.add(file);
                 names.add(file.getName());
-//                songlist.getItems().add(file.getName());
             }
-            playList.setItems(names);
+            songlist.setItems(names);
 
 
             media = new Media(audios.get(audioNum).toURI().toString());
@@ -132,7 +137,7 @@ public class MainPageController implements Initializable
             audioProgressBar.setStyle("-fx-accent: #00FF00;");
         }
         else {
-            errorMessage(1);
+            ErrorMessage(1);
             audioLabel.setText("No Song");
             init = false;
         }
@@ -150,6 +155,7 @@ public class MainPageController implements Initializable
     {
         cancelTimer();
         mediaPlayer.pause();
+        ErrorMessage(1);
     }
 
     public void previousAudio()
@@ -223,20 +229,20 @@ public class MainPageController implements Initializable
         audioProgressBar.setProgress(0);
         mediaPlayer.seek(Duration.seconds(0));
     }
-/*
-    public void changeAudioSpeed(ActionEvent event)
-    {
-        if(speedBox.getValue() == null)
+    /*
+        public void changeAudioSpeed(ActionEvent event)
         {
-            mediaPlayer.setRate(1);
-        }
-        else
-        {
-            mediaPlayer.setRate(Integer.parseInt(speedBox.getValue()));
-        }
+            if(speedBox.getValue() == null)
+            {
+                mediaPlayer.setRate(1);
+            }
+            else
+            {
+                mediaPlayer.setRate(Integer.parseInt(speedBox.getValue()));
+            }
 
-    }
-*/
+        }
+    */
     public void startTimer()
     {
         timer = new Timer();
@@ -265,52 +271,49 @@ public class MainPageController implements Initializable
 
     public void listClicked(MouseEvent event)
     {
-        if(playList.getSelectionModel().getSelectedItem() != null)
-        {
-            String item = (String) playList.getSelectionModel().getSelectedItem();
-                String item2 = audioLabel.getText();
+        if(songlist.getSelectionModel().getSelectedItem()!=null) {
+            String item = songlist.getSelectionModel().getSelectedItem();
+            String item2 = audios.get(audioNum).getName();
 
-            if (!item.equals(item2))
-            {
+            if (!(item.equals(item2))) {
                 audioNum = 0;
+                item2 = audios.get(audioNum).getName();
 
-                for (item2 = ((File) audios.get(audioNum)).getName(); !item.equals(item2); item2 = ((File) audios.get(audioNum)).getName())
-                    ++audioNum;
-
+                while (!(item.equals(item2))) {
+                    audioNum++;
+                    item2 = audios.get(audioNum).getName();
+                }
                 mediaPlayer.stop();
+
                 if (run)
                     cancelTimer();
 
-                media = new Media(((File) audios.get(audioNum)).toURI().toString());
+                media = new Media(audios.get(audioNum).toURI().toString());
                 mediaPlayer = new MediaPlayer(media);
-                audioLabel.setText(((File) audios.get(audioNum)).getName());
+                audioLabel.setText(audios.get(audioNum).getName());
+
                 playAudio();
             }
         }
     }
 
-    public void errorMessage(int code)
+    public void ErrorMessage(int code)
     {
         String message;
-        switch (code)
-        {
-            case 1:
-            {
-                message = "No any file found in the directory.";
+        switch (code) {
+            case 1: {
+                message = "E ";
                 break;
             }
-            case 2:
-            {
+            case 2:{
                 message = "Er ";
                 break;
             }
-            case 3:
-            {
+            case 3:{
                 message = "Err ";
                 break;
             }
-            case 4:
-            {
+            case 4:{
                 message = " ";
                 break;
             }
