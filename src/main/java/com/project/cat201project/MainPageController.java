@@ -2,10 +2,13 @@ package com.project.cat201project;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -14,7 +17,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -26,7 +28,8 @@ public class MainPageController implements Initializable
 
     @FXML private Pane pane;
     @FXML private Label audioLabel, currentTime, totalDuration;
-    @FXML private Button playBttn, pauseBttn, resetBttn, previousBttn, nextBttn, browseBttn;
+    @FXML private ListView<String> songlist;
+    @FXML private Button playBttn, pauseBttn, stopBttn, previousBttn, nextBttn, browseBttn;
     //@FXML private ComboBox<String> speedBox;
     @FXML private Slider volSlider;
     @FXML private ProgressBar audioProgressBar;
@@ -39,19 +42,25 @@ public class MainPageController implements Initializable
         Stage stage = (Stage) browseBttn.getScene().getWindow();
         File file = dirChooser.showDialog(stage);
 
-
         String pathname = file.getAbsolutePath();
         fileDirectory = new File(pathname);
         files = fileDirectory.listFiles();
 
         if (files != null)
         {
+            stopAudio();
             audios.clear();
             for (File fil : files)
             {
-                audios.add(fil);
+                if(fil.getName().endsWith("mp3") || fil.getName().endsWith("wav"))
+                {
+                    audios.add(fil);
+                }
             }
-            audioLabel.setText(audios.get(audioNum).getName());
+            media = new Media(audios.get(audioNum).toURI().toString());
+            mediaPlayer = new MediaPlayer(media);
+            nextAudio();
+            audioLabel.setText(audios.get(audioNum).getName().replace(".mp3", ""));
         }
     }
 
@@ -76,19 +85,22 @@ public class MainPageController implements Initializable
         fileDirectory = new File("music");
         files = fileDirectory.listFiles();
 
+        ObservableList<String> names = FXCollections.observableArrayList();;
         if (files != null)
         {
             for (File file: files)
             {
                 audios.add(file);
+                names.add(file.getName());
+//                songlist.getItems().add(file.getName());
             }
+            songlist.setItems(names);
         }
 
         media = new Media(audios.get(audioNum).toURI().toString());
         mediaPlayer = new MediaPlayer(media);
-        audioLabel.setText(audios.get(audioNum).getName());
+        audioLabel.setText(audios.get(audioNum).getName().replace(".mp3", ""));
 /*
-
         for(int i = 0; i < audioSpeeds.length; i++)
         {
             speedBox.getItems().add(Double.toString(audioSpeeds[i]));
@@ -135,7 +147,7 @@ public class MainPageController implements Initializable
 
             media = new Media(audios.get(audioNum).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
-            audioLabel.setText(audios.get(audioNum).getName());
+            audioLabel.setText(audios.get(audioNum).getName().replace(".mp3", ""));
 
             playAudio();
         }
@@ -149,7 +161,7 @@ public class MainPageController implements Initializable
 
             media = new Media(audios.get(audioNum).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
-            audioLabel.setText(audios.get(audioNum).getName());
+            audioLabel.setText(audios.get(audioNum).getName().replace(".mp3", ""));
 
             playAudio();
         }
@@ -167,7 +179,7 @@ public class MainPageController implements Initializable
 
             media = new Media(audios.get(audioNum).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
-            audioLabel.setText(audios.get(audioNum).getName());
+            audioLabel.setText(audios.get(audioNum).getName().replace(".mp3", ""));
 
             playAudio();
         }
@@ -181,7 +193,7 @@ public class MainPageController implements Initializable
 
             media = new Media(audios.get(audioNum).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
-            audioLabel.setText(audios.get(audioNum).getName());
+            audioLabel.setText(audios.get(audioNum).getName().replace(".mp3", ""));
 
             playAudio();
         }
@@ -189,6 +201,8 @@ public class MainPageController implements Initializable
 
     public void stopAudio()
     {
+        cancelTimer();
+        mediaPlayer.stop();
         audioProgressBar.setProgress(0);
         mediaPlayer.seek(Duration.seconds(0));
     }
@@ -231,7 +245,36 @@ public class MainPageController implements Initializable
         run = false;
         timer.cancel();
     }
-/*
+
+    public void listClicked(MouseEvent event)
+    {
+        String item = songlist.getSelectionModel().getSelectedItem();
+        //String item2 =audioLabel.getText();
+        //System.out.println(item);
+        //System.out.println(item2);
+        //System.out.println(item.equals(item2));
+        //if(!(item.equals(item2)));
+        {
+            audioNum = 0;
+            String item2 = audios.get(audioNum).getName();
+
+            while (!(item.equals(item2))) {
+                audioNum++;
+                item2 = audios.get(audioNum).getName();
+            }
+            mediaPlayer.stop();
+
+            if (run)
+                cancelTimer();
+
+            media = new Media(audios.get(audioNum).toURI().toString());
+            mediaPlayer = new MediaPlayer(media);
+            audioLabel.setText(audios.get(audioNum).getName());
+
+            playAudio();
+        }
+    }
+    /*
     public ArrayList<File> findSong (File file)
     {
         ArrayList<File> arrayList = new ArrayList<>();
@@ -257,5 +300,5 @@ public class MainPageController implements Initializable
     {
         final ArrayList<File> mySongs = findSong()
     }
-*/
+    */
 }
