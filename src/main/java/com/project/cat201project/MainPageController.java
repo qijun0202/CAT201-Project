@@ -39,6 +39,20 @@ public class MainPageController implements Initializable
         Stage stage = (Stage) browseBttn.getScene().getWindow();
         File file = dirChooser.showDialog(stage);
 
+
+        String pathname = file.getAbsolutePath();
+        fileDirectory = new File(pathname);
+        files = fileDirectory.listFiles();
+
+        if (files != null)
+        {
+            audios.clear();
+            for (File fil : files)
+            {
+                audios.add(fil);
+            }
+            audioLabel.setText(audios.get(audioNum).getName());
+        }
     }
 
     private Media media;
