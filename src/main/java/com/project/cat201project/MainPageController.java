@@ -46,13 +46,14 @@ public class MainPageController implements Initializable
         Stage stage = (Stage) browseBttn.getScene().getWindow();
         File file = dirChooser.showDialog(stage);
 
-        if(file!=null)
+        if(file != null)
         {
             String pathname = file.getAbsolutePath();
             fileDirectory = new File(pathname);
             files = fileDirectory.listFiles();
 
-            if (files.length != 0) {
+            if (files.length != 0)
+            {
                 if (run)
                     stopAudio();
                 audios.clear();
@@ -60,7 +61,8 @@ public class MainPageController implements Initializable
                 audioNum = 0;
                 ObservableList<String> names = FXCollections.observableArrayList();
                 for (File fil : files) {
-                    if (fil.getName().endsWith("mp3") || fil.getName().endsWith("wav")) {
+                    if (fil.getName().endsWith("mp3") || fil.getName().endsWith("wav"))
+                    {
                         audios.add(fil);
                         names.add(fil.getName());
                     }
@@ -70,6 +72,10 @@ public class MainPageController implements Initializable
                 mediaPlayer = new MediaPlayer(media);
                 playAudio();
                 audioLabel.setText(audios.get(audioNum).getName().replace(".mp3", ""));
+            }
+            else
+            {
+                MessageDialog();
             }
             if (!init) {
                 volSlider.valueProperty().addListener(new ChangeListener<Number>() {
@@ -340,6 +346,22 @@ public class MainPageController implements Initializable
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error Dialog");
         alert.setHeaderText("Look, an Error Dialog");
+        alert.setContentText(message);
+
+        alert.showAndWait();
+    }
+
+    public void MessageDialog()
+    {
+        String message;
+
+        message = "You have selected an empty folder or folder that does not contain any mp3 or wav music files. Please check and select again.";
+
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setHeight(300.0);
+        alert.setWidth(600.0);
+        alert.setTitle("Warning");
+        alert.setHeaderText(null);
         alert.setContentText(message);
 
         alert.showAndWait();
